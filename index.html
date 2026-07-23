@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studio 1:16 · My Favorite Things</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F8EAF0; --surface:#FFFFFF; --ink:#3D2C3E; --ink-2:#75617A; --ink-3:#A08FA5;
+    --pink:#E85D9E; --pink-soft:#FCE7F1; --purple:#8B5FBF; --purple-soft:#F1EAFB;
+    --gold:#D9A404; --gold-soft:#FCF3D7; --teal:#2A9D8F; --teal-soft:#E0F3F0;
+    --warn:#B4530A; --warn-soft:#FDEBDD;
+    --line:#F0D8E3; --shadow:0 2px 6px rgba(120,52,84,.06), 0 12px 28px rgba(120,52,84,.09);
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:'Nunito',system-ui,sans-serif; font-size:16px; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1160px;margin:0 auto;padding:0 20px 80px}
+
+  /* ---------- header ---------- */
+  header{
+    text-align:center; padding:44px 16px 10px; position:relative;
+  }
+  .ribbon{
+    display:inline-block; background:#FFFFFF; color:var(--pink);
+    font-weight:800; font-size:12.5px; letter-spacing:.14em; text-transform:uppercase;
+    padding:6px 14px; border-radius:999px; margin-bottom:14px;
+  }
+  h1{
+    font-family:'Fraunces',serif; font-weight:700; font-size:clamp(30px,5vw,46px);
+    margin:0 0 8px; line-height:1.1;
+  }
+  h1 .accent{color:var(--pink)}
+  .sub{color:var(--ink-2); max-width:560px; margin:0 auto; font-size:16.5px}
+
+  /* ---------- stat chips ---------- */
+  .stats{display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin:26px 0 6px}
+  .stat{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    padding:10px 18px; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px;
+  }
+  .stat .num{font-family:'Fraunces',serif; font-size:24px; font-weight:700}
+  .stat .lbl{color:var(--ink-2); font-size:13.5px; font-weight:600}
+  .stat.fun{padding:8px 14px; font-size:13.5px; color:var(--ink-2); font-weight:600}
+  .stat.fun b{color:var(--ink)}
+  .copybtn{
+    margin-top:12px; border:0; background:#fff; color:var(--ink); font:inherit;
+    font-weight:800; font-size:13.5px; padding:9px 16px; border-radius:999px;
+    cursor:pointer; box-shadow:var(--shadow); display:inline-block;
+  }
+  .copybtn:hover{color:var(--pink)}
+  .plist .item{display:flex; justify-content:space-between; gap:14px}
+  .plist .item .who{font-weight:800}
+
+  .bday-banner{
+    margin:18px auto 0; max-width:640px; background:var(--gold-soft); border:1px solid #F2E2AC;
+    border-radius:14px; padding:10px 18px; font-weight:600; color:#6B5303; font-size:15px;
+    display:none;
+  }
+
+  /* ---------- controls ---------- */
+  .controls{
+    display:flex; gap:12px; align-items:center; flex-wrap:wrap; justify-content:center;
+    margin:30px 0 26px; position:sticky; top:0; z-index:30;
+    background:linear-gradient(var(--bg) 82%, transparent); padding:14px 0 18px;
+  }
+  .search{
+    flex:1 1 300px; max-width:420px; position:relative;
+  }
+  .search input{
+    width:100%; padding:12px 16px 12px 42px; border-radius:999px; border:1.5px solid var(--line);
+    background:var(--surface); font:inherit; font-size:15.5px; color:var(--ink);
+    box-shadow:var(--shadow); outline:none; transition:border-color .15s;
+  }
+  .search input:focus{border-color:var(--pink)}
+  .search svg{position:absolute; left:15px; top:50%; transform:translateY(-50%); opacity:.45}
+  .seg{
+    display:flex; background:var(--surface); border:1.5px solid var(--line); border-radius:999px;
+    padding:3px; box-shadow:var(--shadow);
+  }
+  .seg button{
+    border:0; background:transparent; font:inherit; font-weight:700; font-size:14px;
+    color:var(--ink-2); padding:8px 16px; border-radius:999px; cursor:pointer;
+  }
+  .seg button.on{background:var(--ink); color:#fff}
+  .refresh{
+    border:1.5px solid var(--line); background:var(--surface); border-radius:999px;
+    font:inherit; font-weight:700; font-size:14px; color:var(--ink-2);
+    padding:10px 18px; cursor:pointer; box-shadow:var(--shadow);
+  }
+  .refresh:hover{color:var(--ink)}
+
+  /* ---------- card grid ---------- */
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(255px,1fr)); gap:18px}
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:22px 20px 18px; cursor:pointer; position:relative;
+    transition:transform .15s ease, box-shadow .15s ease; overflow:hidden;
+  }
+  .card:hover{transform:translateY(-3px); box-shadow:0 4px 10px rgba(61,44,62,.08),0 18px 38px rgba(61,44,62,.12)}
+  .card::before{
+    content:""; position:absolute; inset:0 0 auto 0; height:6px;
+    background:var(--card-accent, var(--pink));
+  }
+  .avatar{
+    width:104px;height:104px;border-radius:50%;
+    background:var(--card-accent-soft, var(--pink-soft)); color:var(--card-accent, var(--pink));
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif; font-weight:700; font-size:34px; margin-bottom:12px;
+    position:relative; overflow:hidden; flex-shrink:0;
+  }
+  .avatar img{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:50%;
+  }
+  .card h3{margin:0 0 2px; font-size:18.5px; font-weight:800; letter-spacing:-.01em}
+  .card .meta{color:var(--ink-2); font-size:13.5px; font-weight:600; margin-bottom:12px}
+  .tags{display:flex; flex-wrap:wrap; gap:6px}
+  .tag{
+    font-size:12.5px; font-weight:700; padding:4px 10px; border-radius:999px;
+    background:var(--bg); border:1px solid var(--line); color:var(--ink-2);
+    display:inline-flex; align-items:center; gap:5px;
+  }
+  .tag.bday{background:var(--gold-soft); border-color:#F2E2AC; color:#6B5303}
+  .tag.allergy{background:var(--warn-soft); border-color:#F5D3B5; color:var(--warn)}
+  .swatch{width:11px;height:11px;border-radius:50%;border:1px solid rgba(0,0,0,.15);display:inline-block}
+  .card .more{
+    margin-top:14px; font-size:13px; font-weight:800; color:var(--card-accent, var(--pink));
+  }
+
+  /* ---------- states ---------- */
+  .state{
+    text-align:center; padding:70px 24px; color:var(--ink-2); max-width:620px; margin:0 auto;
+  }
+  .state h2{font-family:'Fraunces',serif; color:var(--ink); margin:0 0 10px}
+  .state code{
+    background:var(--surface); border:1px solid var(--line); padding:2px 7px; border-radius:6px;
+    font-size:13px; word-break:break-all;
+  }
+  .spinner{
+    width:34px;height:34px;border-radius:50%;margin:0 auto 18px;
+    border:4px solid var(--pink-soft); border-top-color:var(--pink);
+    animation:spin .8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* ---------- modal ---------- */
+  .overlay{
+    position:fixed; inset:0; background:rgba(61,44,62,.45); backdrop-filter:blur(3px);
+    display:none; align-items:flex-start; justify-content:center; padding:40px 16px; z-index:100;
+    overflow-y:auto;
+  }
+  .overlay.open{display:flex}
+  .modal{
+    background:var(--surface); border-radius:24px; max-width:680px; width:100%;
+    box-shadow:0 30px 80px rgba(61,44,62,.35); overflow:hidden; position:relative;
+    animation:pop .18s ease-out;
+  }
+  @keyframes pop{from{transform:scale(.96) translateY(8px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+  .modal-head{
+    padding:30px 30px 20px; background:var(--m-accent-soft, var(--pink-soft)); position:relative;
+  }
+  .modal-head .avatar{width:160px;height:160px;font-size:52px;background:#fff;color:var(--m-accent,var(--pink));margin-bottom:12px}
+  .modal-head h2{margin:0 0 4px; font-family:'Fraunces',serif; font-size:28px; line-height:1.15}
+  .modal-head .meta{color:var(--ink-2); font-weight:700; font-size:14px}
+  .close{
+    position:absolute; top:16px; right:16px; width:36px; height:36px; border-radius:50%;
+    border:0; background:rgba(255,255,255,.85); color:var(--ink); font-size:17px; font-weight:800;
+    cursor:pointer; line-height:1;
+  }
+  .modal-body{padding:24px 30px 32px}
+  .sect{margin-bottom:22px}
+  .sect:last-child{margin-bottom:0}
+  .sect h4{
+    margin:0 0 10px; font-size:12.5px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--ink-3); font-weight:800; display:flex; align-items:center; gap:8px;
+  }
+  .sect h4::after{content:""; flex:1; height:1px; background:var(--line)}
+  .kv{display:grid; grid-template-columns:1fr 1fr; gap:8px 18px}
+  @media (max-width:560px){.kv{grid-template-columns:1fr}}
+  .kv .item{background:var(--bg); border-radius:12px; padding:9px 13px}
+  .kv .item.wide{grid-column:1 / -1}
+  .kv .k{font-size:12px; font-weight:800; color:var(--ink-3); text-transform:uppercase; letter-spacing:.06em}
+  .kv .v{font-weight:600; font-size:15px; overflow-wrap:anywhere}
+  .sect.warn .item{background:var(--warn-soft)}
+  .sect.warn .v{color:var(--warn)}
+  footer{
+    text-align:center; color:var(--ink-3); font-size:13px; margin-top:56px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="ribbon">2026 – 2027 Dance Year</div>
+    <h1>Studio 1:16 <span class="accent">·</span> My Favorite Things</h1>
+    <p class="sub">Everything you need to celebrate our dancers &amp; teachers all year long — tap anyone to see their full list of favorites. 💝</p>
+    <p style="margin-top:16px"><a href="https://docs.google.com/forms/d/e/1FAIpQLScZF9t69CAXn8TiQy7inCbzVeNbRsVAHTOx_Rl7gIF8M_wGag/viewform" target="_blank" rel="noopener" style="display:inline-block;background:var(--pink);color:#fff;font-weight:800;font-size:14.5px;text-decoration:none;padding:11px 22px;border-radius:999px;box-shadow:var(--shadow)">✏️ Haven't filled it out yet? Take the form</a></p>
+    <div class="stats" id="stats"></div>
+    <div class="stats" id="funfacts"></div>
+    <div class="bday-banner" id="bdayBanner"></div>
+  </header>
+
+  <div class="controls" id="controls" style="display:none">
+    <div class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Search a name, candy, store, anything…" autocomplete="off">
+    </div>
+    <div class="seg" role="group" aria-label="Sort">
+      <button id="sortName" class="on">A → Z</button>
+      <button id="sortBday">🎂 Birthdays</button>
+    </div>
+    <button class="refresh" id="allergyBtn" title="Every dietary restriction on the team, in one list">⚠️ Allergies</button>
+    <button class="refresh" id="drinkBtn" title="Everyone's Sonic &amp; Starbucks orders">🥤 Drink run</button>
+    <button class="refresh" id="refreshBtn" title="Pull the latest form responses">↻ Refresh</button>
+  </div>
+
+  <div id="content">
+    <div class="state" id="loading"><div class="spinner"></div>Loading favorites…</div>
+  </div>
+
+  <footer>Made with 💗 for Studio 1:16 · updates automatically as new form responses come in</footer>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal" role="dialog" aria-modal="true"></div>
+</div>
+
+<script>
+/* ================= CONFIG ================= */
+const SHEET_ID = "1ftpeZ5pmE4hWIbZiqRVI6pavQryTidnPBAJV8p938J4";
+// Optional: name of the tab to read (leave "" for the first/default tab)
+const SHEET_TAB = "";
+// Data sources tried in order. #1 works once the sheet is set to
+// "Anyone with the link – Viewer". If you instead used File → Share → Publish
+// to web (CSV), paste that URL into PUBLISHED_CSV_URL below.
+const PUBLISHED_CSV_URL = "";
+const TAB_PARAM = SHEET_TAB ? `&sheet=${encodeURIComponent(SHEET_TAB)}` : "";
+const SOURCES = [
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv${TAB_PARAM}`,
+  PUBLISHED_CSV_URL
+].filter(Boolean);
+
+const ACCENTS = [
+  ["#E85D9E","#FCE7F1"], ["#8B5FBF","#F1EAFB"], ["#2A9D8F","#E0F3F0"],
+  ["#D9A404","#FCF3D7"], ["#D96C3F","#FDEBDD"], ["#4C7FE0","#E5EDFC"]
+];
+
+/* Field map: key → [regex to find the column, pretty label] */
+const F = {
+  ts:        [/^timestamp/i, "Submitted"],
+  email:     [/^email/i, "Email"],
+  name:      [/first\s*&\s*last\s*name/i, "Name"],
+  bday:      [/^birthday/i, "Birthday"],
+  monogram:  [/monogram/i, "Monogram initials"],
+  shirt:     [/shirt\s*size/i, "Shirt size"],
+  chapstick: [/chapstick|lip\s*gloss/i, "Chapstick / lip gloss"],
+  gum:       [/mint\s*or\s*gum/i, "Mint / gum"],
+  sss:       [/sour,?\s*sweet/i, "Sour · sweet · salty"],
+  chocvan:   [/chocolate\s*or\s*vanilla/i, "Chocolate or vanilla"],
+  cookcake:  [/cookies\s*or\s*cake/i, "Cookies or cake"],
+  bookmov:   [/books\s*or\s*movies/i, "Books or movies"],
+  color:     [/favorite\s*color/i, "Favorite color"],
+  snack:     [/favorite\s*snack/i, "Snack"],
+  candy:     [/favorite\s*candy/i, "Candy"],
+  rest:      [/favorite\s*restaurant/i, "Restaurant"],
+  fastfood:  [/favorite\s*fast\s*food/i, "Fast food"],
+  sonic:     [/sonic\s*drink/i, "Sonic drink"],
+  sbux:      [/starbucks\s*drink/i, "Starbucks drink"],
+  flower:    [/favorite\s*flower/i, "Flower"],
+  scent:     [/favorite\s*scent/i, "Scent"],
+  stores:    [/favorite\s*store/i, "Stores"],
+  giftcard:  [/gift\s*card/i, "Gift card spots"],
+  allergy:   [/allergies|dietary/i, "Allergies / dietary"],
+  dislikes:  [/^dislikes/i, "Dislikes"],
+  dance:     [/(type|style)\s*of\s*dance/i, "Favorite dance style"],
+  hobbies:   [/hobbies/i, "Hobbies"],
+  photo:     [/photo|picture|profile\s*pic|upload|headshot|selfie/i, "Photo"]
+};
+
+/* Modal layout: section title, emoji, [field keys] */
+const SECTIONS = [
+  ["Sweet tooth","🍫",["chocvan","cookcake","sss","candy"]],
+  ["Food & drink","🍟",["snack","rest","fastfood","sonic","sbux","gum"]],
+  ["Pretty things","🌸",["color","flower","scent","chapstick"]],
+  ["Shopping & gift cards","🛍️",["stores","giftcard","shirt","monogram"]],
+  ["All about me","✨",["dance","hobbies","bookmov","bday","email"]]
+];
+
+/* ================= CSV parsing ================= */
+function parseCSV(text){
+  const rows=[]; let row=[], cur="", inQ=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(inQ){
+      if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else inQ=false; }
+      else cur+=c;
+    }else{
+      if(c==='"') inQ=true;
+      else if(c===','){ row.push(cur); cur=""; }
+      else if(c==='\n'||c==='\r'){
+        if(c==='\r'&&text[i+1]==='\n') i++;
+        row.push(cur); cur="";
+        if(row.length>1||row[0]!=="") rows.push(row);
+        row=[];
+      }
+      else cur+=c;
+    }
+  }
+  if(cur!==""||row.length){ row.push(cur); if(row.length>1||row[0]!=="") rows.push(row); }
+  return rows;
+}
+
+function mapColumns(header){
+  const idx={};
+  for(const key in F){
+    const rx=F[key][0];
+    const i=header.findIndex(h=>rx.test(h.trim()));
+    if(i>=0) idx[key]=i;
+  }
+  return idx;
+}
+
+/* ================= data shaping ================= */
+const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function parseBday(s){
+  if(!s) return null;
+  const m=String(s).trim().match(/^(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?/);
+  if(!m) return null;
+  const mo=+m[1], d=+m[2];
+  if(mo<1||mo>12||d<1||d>31) return null;
+  return {mo,d,label:`${MONTHS[mo-1]} ${d}`};
+}
+function initialsOf(name){
+  return String(name||"").trim().split(/\s+/).map(w=>w[0]||"").join("").slice(0,2).toUpperCase()||"?";
+}
+/* Turn a Drive link (or any image URL) into a displayable image src */
+function photoSrc(v,size){
+  if(!v) return null;
+  const first=String(v).split(/[,\s]+/)[0];
+  const m=first.match(/[?&]id=([\w-]{20,})/)||first.match(/\/d\/([\w-]{20,})/)||first.match(/^([\w-]{25,})$/);
+  if(m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w${size||400}`;
+  if(/^https?:\/\/.+\.(png|jpe?g|gif|webp)(\?|$)/i.test(first)) return first;
+  return null;
+}
+function cssColor(name){
+  if(!name) return null;
+  const n=String(name).trim().split(/[,\/&]| and /i)[0].trim().toLowerCase().replace(/\s+/g,"");
+  const MAP={navy:"#1F3A6E",lightblue:"#7EB6E8",babyblue:"#A8CDF0",hotpink:"#E8407F",lightpink:"#F3A8C6",royalblue:"#2E5BC7",tealblue:"#2A9D8F",mintgreen:"#9FD8C4",lavender:"#B9A3DC",sagegreen:"#9CAF88"};
+  if(MAP[n]) return MAP[n];
+  return (window.CSS&&CSS.supports&&CSS.supports("color",n))?n:null;
+}
+function buildPeople(rows,idx){
+  const get=(r,k)=>idx[k]!=null?String(r[idx[k]]||"").trim():"";
+  const seen=new Map();
+  rows.forEach((r,i)=>{
+    const name=get(r,"name");
+    if(!name) return;
+    const p={ i, name, raw:{}, bd:parseBday(get(r,"bday")) };
+    for(const k in F) p.raw[k]=get(r,k);
+    seen.set(name.toLowerCase().replace(/\s+/g," "),p); // later rows overwrite earlier = latest response wins
+  });
+  return [...seen.values()];
+}
+
+/* ================= rendering ================= */
+const $=s=>document.querySelector(s);
+let PEOPLE=[], sortMode="name";
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function accentFor(p){ return ACCENTS[(p.name.charCodeAt(0)+p.name.length)%ACCENTS.length]; }
+
+function bdayOffset(p,mo,d){
+  if(!p.bd) return 9999;
+  let v=(p.bd.mo-mo)*31+(p.bd.d-d);
+  if(v<0) v+=372;
+  return v;
+}
+const SKIP_RX=/^(n\/?a|none|no|nothing|nope)\.?!?$/i;
+function tally(getVals){
+  const m=new Map();
+  PEOPLE.forEach(p=>getVals(p).forEach(v=>{
+    const t=String(v||"").trim(), k=t.toLowerCase();
+    if(!k||SKIP_RX.test(k)) return;
+    const e=m.get(k)||{label:t,n:0}; e.n++; m.set(k,e);
+  }));
+  return [...m.values()].sort((a,b)=>b.n-a.n);
+}
+function renderStats(){
+  const now=new Date(), mo=now.getMonth()+1, d=now.getDate();
+  const soon=PEOPLE.filter(p=>bdayOffset(p,mo,d)<=30)
+                   .sort((a,b)=>bdayOffset(a,mo,d)-bdayOffset(b,mo,d));
+  $("#stats").innerHTML=`
+    <div class="stat"><span class="num">${PEOPLE.length}</span><span class="lbl">dancers &amp;<br>teachers</span></div>
+    <div class="stat"><span class="num">🎂 ${soon.length}</span><span class="lbl">birthdays in the<br>next 30 days</span></div>`;
+  const b=$("#bdayBanner");
+  if(soon.length){
+    b.style.display="block";
+    b.innerHTML=`🎉 Upcoming birthdays: `+soon.map(p=>`<b>${esc(p.name)}</b> (${p.bd.label})`).join(" · ");
+  } else b.style.display="none";
+  /* team fun facts */
+  const candy=tally(p=>[p.raw.candy]), stores=tally(p=>String(p.raw.stores||"").split(/[,\/&]| and /i));
+  const cv=tally(p=>[p.raw.chocvan]), cc=tally(p=>[p.raw.cookcake]);
+  const cnt=(t,name)=>{const x=t.find(e=>e.label.toLowerCase()===name);return x?x.n:0;};
+  const chips=[];
+  if(candy[0]&&candy[0].n>=2) chips.push(`🍬 Top candy: <b>${esc(candy[0].label)}</b> (${candy[0].n})`);
+  if(stores[0]&&stores[0].n>=2) chips.push(`🛍️ Top store: <b>${esc(stores[0].label)}</b> (${stores[0].n})`);
+  const ch=cnt(cv,"chocolate"), va=cnt(cv,"vanilla");
+  if(ch+va>0) chips.push(`🍫 Team chocolate ${ch} · vanilla ${va}`);
+  const ck=cnt(cc,"cookies"), ca=cnt(cc,"cake");
+  if(ck+ca>0) chips.push(`🍪 Cookies ${ck} · cake ${ca}`);
+  $("#funfacts").innerHTML=chips.map(c=>`<div class="stat fun">${c}</div>`).join("");
+}
+
+function matches(p,q){
+  if(!q) return true;
+  q=q.toLowerCase();
+  return Object.values(p.raw).some(v=>v.toLowerCase().includes(q));
+}
+function sortPeople(list){
+  const now=new Date(), mo=now.getMonth()+1, d=now.getDate();
+  if(sortMode==="name") return list.sort((a,b)=>a.name.localeCompare(b.name));
+  const key=p=>{
+    if(!p.bd) return 9999;
+    let v=(p.bd.mo-mo)*31+(p.bd.d-d);
+    if(v<0) v+=372;             // already passed → next year
+    return v;
+  };
+  return list.sort((a,b)=>key(a)-key(b));
+}
+
+function renderGrid(){
+  const q=$("#q").value.trim();
+  const list=sortPeople(PEOPLE.filter(p=>matches(p,q)));
+  const c=$("#content");
+  if(!list.length){
+    c.innerHTML=`<div class="state"><h2>No matches 🩰</h2>Try a different search.</div>`;
+    return;
+  }
+  c.innerHTML=`<div class="grid">`+list.map(p=>{
+    const [a,as]=accentFor(p);
+    const col=cssColor(p.raw.color);
+    const tags=[];
+    if(p.bd) tags.push(`<span class="tag bday">🎂 ${p.bd.label}</span>`);
+    if(p.raw.color) tags.push(`<span class="tag">${col?`<span class="swatch" style="background:${col}"></span>`:"🎨"} ${esc(p.raw.color)}</span>`);
+    if(p.raw.dance) tags.push(`<span class="tag">🩰 ${esc(p.raw.dance)}</span>`);
+    const al=p.raw.allergy&&!/^(n\/?a|none|no)\.?$/i.test(p.raw.allergy.trim());
+    if(al) tags.push(`<span class="tag allergy">⚠️ ${esc(p.raw.allergy)}</span>`);
+    const ph=photoSrc(p.raw.photo,240);
+    return `<div class="card" style="--card-accent:${a};--card-accent-soft:${as}" data-i="${p.i}" tabindex="0" role="button" aria-label="Open ${esc(p.name)}">
+      <div class="avatar">${esc(p.raw.monogram?p.raw.monogram.slice(0,3).toUpperCase():initialsOf(p.name))}${ph?`<img src="${esc(ph)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`:""}</div>
+      <h3>${esc(p.name)}</h3>
+      <div class="meta">${esc(p.raw.shirt||"")}</div>
+      <div class="tags">${tags.join("")}</div>
+      <div class="more">See all favorites →</div>
+    </div>`;
+  }).join("")+`</div>`;
+  c.querySelectorAll(".card").forEach(el=>{
+    const open=()=>openModal(+el.dataset.i);
+    el.addEventListener("click",open);
+    el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}});
+  });
+}
+
+function openModal(i){
+  const p=PEOPLE.find(x=>x.i===i); if(!p) return;
+  const [a,as]=accentFor(p);
+  const item=(k,wide)=>{
+    const v=p.raw[k]; if(!v) return "";
+    const label=F[k]?F[k][1]:k;
+    const shown=(k==="bday"&&p.bd)?p.bd.label:v;
+    return `<div class="item${wide?" wide":""}"><div class="k">${esc(label)}</div><div class="v">${esc(shown)}</div></div>`;
+  };
+  let html=`
+    <div class="modal-head" style="--m-accent:${a};--m-accent-soft:${as}">
+      <button class="close" id="mClose" aria-label="Close">✕</button>
+      <div class="avatar">${esc(p.raw.monogram?p.raw.monogram.slice(0,3).toUpperCase():initialsOf(p.name))}${(()=>{const ph=photoSrc(p.raw.photo,800);return ph?`<img src="${esc(ph)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:"";})()}</div>
+      <h2>${esc(p.name)}</h2>
+      <div class="meta">${p.bd?`🎂 ${p.bd.label} &nbsp;·&nbsp; `:""}${esc(p.raw.shirt||"")}</div>
+      <button class="copybtn" id="copyBtn">📋 Copy gift cheat sheet</button>
+    </div>
+    <div class="modal-body">`;
+  for(const [title,emoji,keys] of SECTIONS){
+    const items=keys.map(k=>item(k)).join("");
+    if(items) html+=`<div class="sect"><h4>${emoji} ${title}</h4><div class="kv">${items}</div></div>`;
+  }
+  const gk=[["allergy",true],["dislikes",true]].map(([k,w])=>item(k,w)).join("");
+  if(gk) html+=`<div class="sect warn"><h4>⚠️ Good to know</h4><div class="kv">${gk}</div></div>`;
+  html+=`</div>`;
+  $("#modal").innerHTML=html;
+  $("#overlay").classList.add("open");
+  document.body.style.overflow="hidden";
+  $("#mClose").addEventListener("click",closeModal);
+  $("#copyBtn").addEventListener("click",async()=>{
+    const ok=await copyText(cheatText(p));
+    $("#copyBtn").textContent=ok?"✅ Copied!":"⚠️ Couldn't copy";
+    setTimeout(()=>{const b=$("#copyBtn"); if(b) b.textContent="📋 Copy gift cheat sheet";},1600);
+  });
+}
+
+function cheatText(p){
+  const L=[`🎁 ${p.name} — gift cheat sheet`];
+  [["Birthday",p.bd?p.bd.label:p.raw.bday],["Shirt size",p.raw.shirt],["Monogram",p.raw.monogram],
+   ["Favorite color",p.raw.color],["Candy",p.raw.candy],["Snack",p.raw.snack],
+   ["Stores",p.raw.stores],["Gift cards",p.raw.giftcard],["Sonic",p.raw.sonic],["Starbucks",p.raw.sbux],
+   ["Restaurant",p.raw.rest],["Fast food",p.raw.fastfood],["Flower",p.raw.flower],["Scent",p.raw.scent],
+   ["Chapstick/gloss",p.raw.chapstick],["Mint/gum",p.raw.gum],
+   ["Sweet tooth",[p.raw.chocvan,p.raw.cookcake,p.raw.sss].filter(Boolean).join(" / ")],
+   ["⚠️ Allergies",p.raw.allergy],["Dislikes",p.raw.dislikes]
+  ].forEach(([k,v])=>{ if(v&&String(v).trim()) L.push(`${k}: ${String(v).trim()}`); });
+  return L.join("\n");
+}
+async function copyText(t){
+  try{ await navigator.clipboard.writeText(t); return true; }
+  catch(e){
+    const ta=document.createElement("textarea");
+    ta.value=t; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select();
+    let ok=false; try{ ok=document.execCommand("copy"); }catch(_){}
+    ta.remove(); return ok;
+  }
+}
+
+function openPanel(title,body){
+  $("#modal").innerHTML=`
+    <div class="modal-head" style="--m-accent:var(--pink);--m-accent-soft:var(--pink-soft)">
+      <button class="close" id="mClose" aria-label="Close">✕</button>
+      <h2>${title}</h2>
+    </div>
+    <div class="modal-body plist">${body}</div>`;
+  $("#overlay").classList.add("open");
+  document.body.style.overflow="hidden";
+  $("#mClose").addEventListener("click",closeModal);
+}
+function allergyPanel(){
+  const list=sortPeople(PEOPLE.slice()).filter(p=>p.raw.allergy&&!SKIP_RX.test(p.raw.allergy.trim()));
+  const body=list.length
+    ? `<div class="sect warn"><h4>⚠️ Allergies &amp; dietary restrictions</h4><div class="kv">`+
+      list.map(p=>`<div class="item wide"><div class="k">${esc(p.name)}</div><div class="v">${esc(p.raw.allergy)}</div></div>`).join("")+
+      `</div></div><p style="color:var(--ink-3);font-size:13px;margin:14px 0 0">Check this before bringing snacks or treats for the team.</p>`
+    : `<p>No allergies or dietary restrictions reported. 🎉</p>`;
+  openPanel("Team allergy list",body);
+}
+function drinkPanel(){
+  const list=sortPeople(PEOPLE.slice());
+  const sect=(title,emoji,key)=>{
+    const items=list.filter(p=>p.raw[key]&&!SKIP_RX.test(p.raw[key].trim()))
+      .map(p=>`<div class="item wide"><div class="k">${esc(p.name)}</div><div class="v">${esc(p.raw[key])}</div></div>`).join("");
+    return items?`<div class="sect"><h4>${emoji} ${title}</h4><div class="kv">${items}</div></div>`:"";
+  };
+  const body=(sect("Sonic orders","🥤","sonic")+sect("Starbucks orders","☕","sbux"))||
+    `<p>No drink orders on file yet.</p>`;
+  openPanel("Drink run 🚗",body);
+}
+function closeModal(){
+  $("#overlay").classList.remove("open");
+  document.body.style.overflow="";
+}
+$("#overlay").addEventListener("click",e=>{if(e.target.id==="overlay")closeModal();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+
+/* ================= load ================= */
+/* JSONP transport via Google's gviz API — immune to CORS restrictions,
+   works from file:// and any host, exactly how Google Charts loads sheets. */
+function gvizJSONP(){
+  return new Promise((resolve,reject)=>{
+    const cb="__gviz_cb_"+Math.floor(performance.now());
+    const s=document.createElement("script");
+    const t=setTimeout(()=>{cleanup();reject(new Error("Google didn't answer (JSONP timeout)"));},15000);
+    function cleanup(){clearTimeout(t); delete window[cb]; s.remove();}
+    window[cb]=resp=>{
+      cleanup();
+      try{
+        if(!resp||resp.status==="error"||!resp.table)
+          throw new Error((resp&&resp.errors&&resp.errors[0]&&resp.errors[0].detailed_message)||"Sheet returned an error");
+        const tbl=resp.table;
+        const cell=c=>c==null?"":(c.f!=null?String(c.f):(c.v!=null?String(c.v):""));
+        const header=tbl.cols.map(c=>c.label||"");
+        const rows=tbl.rows.map(r=>(r.c||[]).map(cell));
+        if(header.some(h=>h)) resolve([header,...rows]);
+        else resolve(rows); // no labels → first data row is the header
+      }catch(e){reject(e);}
+    };
+    s.onerror=()=>{cleanup();reject(new Error("Could not load data from Google"));};
+    s.src=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json;responseHandler:${cb}&headers=1`;
+    document.head.appendChild(s);
+  });
+}
+
+async function load(){
+  $("#content").innerHTML=`<div class="state" id="loading"><div class="spinner"></div>Loading favorites…</div>`;
+  let rows=null, lastErr=null;
+  // 1) CSV over fetch (works when the endpoint sends CORS headers, e.g. publish-to-web)
+  for(const url of SOURCES){
+    try{
+      const res=await fetch(url,{cache:"no-store"});
+      if(!res.ok) throw new Error("HTTP "+res.status);
+      const text=await res.text();
+      if(/<html/i.test(text.slice(0,200))) throw new Error("Got a sign-in page instead of data");
+      rows=parseCSV(text);
+      break;
+    }catch(e){ lastErr=e; }
+  }
+  // 2) JSONP fallback — CORS-proof
+  if(!rows){
+    try{ rows=await gvizJSONP(); }
+    catch(e){ lastErr=e; }
+  }
+  if(!rows){
+    $("#content").innerHTML=`<div class="state">
+      <h2>Can't reach the sheet yet 🎀</h2>
+      <p style="text-align:left">Two things to check:</p>
+      <p style="text-align:left">1. The responses sheet is shared as <b>Anyone with the link – Viewer</b><br>
+      2. You're viewing this page in a regular browser tab (Chrome, Edge, Safari) —
+      some app preview panels block outside data. Double-click the downloaded file
+      or open the hosted link instead.</p>
+      <p style="font-size:13px">(${esc(lastErr?lastErr.message:"")})</p></div>`;
+    return;
+  }
+  if(rows.length<2){
+    $("#content").innerHTML=`<div class="state"><h2>No responses yet 🩰</h2>As soon as the first form response comes in, it'll show up here.</div>`;
+    return;
+  }
+  const idx=mapColumns(rows[0]);
+  PEOPLE=buildPeople(rows.slice(1),idx);
+  $("#controls").style.display="flex";
+  renderStats();
+  renderGrid();
+}
+
+$("#q").addEventListener("input",renderGrid);
+$("#sortName").addEventListener("click",()=>{sortMode="name";$("#sortName").classList.add("on");$("#sortBday").classList.remove("on");renderGrid();});
+$("#sortBday").addEventListener("click",()=>{sortMode="bday";$("#sortBday").classList.add("on");$("#sortName").classList.remove("on");renderGrid();});
+$("#refreshBtn").addEventListener("click",load);
+$("#allergyBtn").addEventListener("click",allergyPanel);
+$("#drinkBtn").addEventListener("click",drinkPanel);
+load();
+</script>
+</body>
+</html>
