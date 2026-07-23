@@ -29,6 +29,15 @@
   header{
     text-align:center; padding:44px 16px 10px; position:relative;
   }
+  .dancer{
+    position:absolute; width:200px; height:200px; color:#F0AECC; opacity:.55;
+    pointer-events:none; z-index:0; top:26px;
+  }
+  .dancer.left{left:max(-10px, calc(50% - 560px))}
+  .dancer.right{right:max(-10px, calc(50% - 560px)); transform:scaleX(-1)}
+  header > *:not(.dancer){position:relative; z-index:1}
+  @media (max-width:900px){.dancer{width:120px;height:120px;opacity:.4;top:8px}}
+  @media (max-width:560px){.dancer{display:none}}
   .ribbon{
     display:inline-block; background:#FFFFFF; color:var(--pink);
     font-weight:800; font-size:12.5px; letter-spacing:.14em; text-transform:uppercase;
@@ -199,6 +208,30 @@
 <body>
 <div class="wrap">
   <header>
+    <svg class="dancer left" viewBox="0 0 100 100" aria-hidden="true">
+      <g fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round">
+        <path d="M37,24 C39,32 41,39 44,46"/>
+        <path d="M38,27 C30,21 20,15 11,13"/>
+        <path d="M39,29 C46,30 53,28 60,24"/>
+        <path d="M44,46 C58,45 76,40 90,29"/>
+        <path d="M44,46 C42,60 41,74 43,86 L50,92"/>
+      </g>
+      <circle cx="35" cy="15" r="6.5" fill="currentColor"/>
+      <circle cx="41" cy="10" r="2.8" fill="currentColor"/>
+      <path d="M32,41 Q44,32 56,45 Q44,59 32,41 Z" fill="currentColor" opacity=".5"/>
+    </svg>
+    <svg class="dancer right" viewBox="0 0 100 100" aria-hidden="true">
+      <g fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round">
+        <path d="M37,24 C39,32 41,39 44,46"/>
+        <path d="M38,27 C30,21 20,15 11,13"/>
+        <path d="M39,29 C46,30 53,28 60,24"/>
+        <path d="M44,46 C58,45 76,40 90,29"/>
+        <path d="M44,46 C42,60 41,74 43,86 L50,92"/>
+      </g>
+      <circle cx="35" cy="15" r="6.5" fill="currentColor"/>
+      <circle cx="41" cy="10" r="2.8" fill="currentColor"/>
+      <path d="M32,41 Q44,32 56,45 Q44,59 32,41 Z" fill="currentColor" opacity=".5"/>
+    </svg>
     <div class="ribbon">2026 – 2027 Dance Year</div>
     <h1>Studio 1:16 <span class="accent">·</span> My Favorite Things</h1>
     <p class="sub">Everything you need to celebrate our dancers &amp; teachers all year long — tap anyone to see their full list of favorites. 💝</p>
@@ -213,6 +246,7 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input id="q" type="search" placeholder="Search a name, candy, store, anything…" autocomplete="off">
     </div>
+    <div class="seg" role="group" aria-label="Team filter" id="teamChips" style="display:none"></div>
     <div class="seg" role="group" aria-label="Sort">
       <button id="sortName" class="on">A → Z</button>
       <button id="sortBday">🎂 Birthdays</button>
@@ -282,6 +316,7 @@ const F = {
   dislikes:  [/^dislikes/i, "Dislikes"],
   dance:     [/(type|style)\s*of\s*dance/i, "Favorite dance style"],
   hobbies:   [/hobbies/i, "Hobbies"],
+  team:      [/\bteam\b|\blevel\b/i, "Team"],
   photo:     [/photo|picture|profile\s*pic|upload|headshot|selfie/i, "Photo"]
 };
 
@@ -372,10 +407,22 @@ function buildPeople(rows,idx){
 
 /* ================= rendering ================= */
 const $=s=>document.querySelector(s);
-let PEOPLE=[], sortMode="name";
+let PEOPLE=[], sortMode="name", teamFilter="";
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
-function accentFor(p){ return ACCENTS[(p.name.charCodeAt(0)+p.name.length)%ACCENTS.length]; }
+const TEAM_ACCENTS={
+  "peewee":["#E85D9E","#FCE7F1"], "mini":["#8B5FBF","#F1EAFB"],
+  "all team":["#2A9D8F","#E0F3F0"], "allteam":["#2A9D8F","#E0F3F0"]
+};
+const TEAM_ORDER=["peewee","mini","all team","allteam"];
+function teamsOf(p){
+  return String(p.raw.team||"").split(/[,;\/]/).map(t=>t.trim()).filter(Boolean);
+}
+function accentFor(p){
+  const t=teamsOf(p)[0];
+  if(t&&TEAM_ACCENTS[t.toLowerCase()]) return TEAM_ACCENTS[t.toLowerCase()];
+  return ACCENTS[(p.name.charCodeAt(0)+p.name.length)%ACCENTS.length];
+}
 
 function bdayOffset(p,mo,d){
   if(!p.bd) return 9999;
@@ -416,13 +463,32 @@ function renderStats(){
   if(ch+va>0) chips.push(`🍫 Team chocolate ${ch} · vanilla ${va}`);
   const ck=cnt(cc,"cookies"), ca=cnt(cc,"cake");
   if(ck+ca>0) chips.push(`🍪 Cookies ${ck} · cake ${ca}`);
+  const tm=tally(p=>teamsOf(p));
+  if(tm.length) chips.push(`🩰 `+tm.map(e=>`${esc(e.label)} <b>${e.n}</b>`).join(" · "));
   $("#funfacts").innerHTML=chips.map(c=>`<div class="stat fun">${c}</div>`).join("");
 }
 
 function matches(p,q){
+  if(teamFilter && !teamsOf(p).some(t=>t.toLowerCase()===teamFilter)) return false;
   if(!q) return true;
   q=q.toLowerCase();
   return Object.values(p.raw).some(v=>v.toLowerCase().includes(q));
+}
+function renderTeamChips(){
+  const found=new Map();
+  PEOPLE.forEach(p=>teamsOf(p).forEach(t=>{const k=t.toLowerCase(); if(!found.has(k)) found.set(k,t);}));
+  const box=$("#teamChips");
+  if(!found.size){ box.style.display="none"; teamFilter=""; return; }
+  const keys=[...found.keys()].sort((a,b)=>{
+    const ia=TEAM_ORDER.indexOf(a), ib=TEAM_ORDER.indexOf(b);
+    return (ia<0?99:ia)-(ib<0?99:ib) || a.localeCompare(b);
+  });
+  box.style.display="flex";
+  box.innerHTML=`<button data-t="" class="${teamFilter===""?"on":""}">All teams</button>`+
+    keys.map(k=>`<button data-t="${esc(k)}" class="${teamFilter===k?"on":""}">${esc(found.get(k))}</button>`).join("");
+  box.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
+    teamFilter=b.dataset.t; renderTeamChips(); renderGrid();
+  }));
 }
 function sortPeople(list){
   const now=new Date(), mo=now.getMonth()+1, d=now.getDate();
@@ -448,9 +514,10 @@ function renderGrid(){
     const [a,as]=accentFor(p);
     const col=cssColor(p.raw.color);
     const tags=[];
+    teamsOf(p).forEach(t=>tags.push(`<span class="tag" style="background:${as};border-color:${as};color:${a}">🩰 ${esc(t)}</span>`));
     if(p.bd) tags.push(`<span class="tag bday">🎂 ${p.bd.label}</span>`);
     if(p.raw.color) tags.push(`<span class="tag">${col?`<span class="swatch" style="background:${col}"></span>`:"🎨"} ${esc(p.raw.color)}</span>`);
-    if(p.raw.dance) tags.push(`<span class="tag">🩰 ${esc(p.raw.dance)}</span>`);
+    if(p.raw.dance) tags.push(`<span class="tag">💃 ${esc(p.raw.dance)}</span>`);
     const al=p.raw.allergy&&!/^(n\/?a|none|no)\.?$/i.test(p.raw.allergy.trim());
     if(al) tags.push(`<span class="tag allergy">⚠️ ${esc(p.raw.allergy)}</span>`);
     const ph=photoSrc(p.raw.photo,240);
@@ -483,7 +550,7 @@ function openModal(i){
       <button class="close" id="mClose" aria-label="Close">✕</button>
       <div class="avatar">${esc(p.raw.monogram?p.raw.monogram.slice(0,3).toUpperCase():initialsOf(p.name))}${(()=>{const ph=photoSrc(p.raw.photo,800);return ph?`<img src="${esc(ph)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:"";})()}</div>
       <h2>${esc(p.name)}</h2>
-      <div class="meta">${p.bd?`🎂 ${p.bd.label} &nbsp;·&nbsp; `:""}${esc(p.raw.shirt||"")}</div>
+      <div class="meta">${teamsOf(p).length?`🩰 ${esc(teamsOf(p).join(", "))} &nbsp;·&nbsp; `:""}${p.bd?`🎂 ${p.bd.label} &nbsp;·&nbsp; `:""}${esc(p.raw.shirt||"")}</div>
       <button class="copybtn" id="copyBtn">📋 Copy gift cheat sheet</button>
     </div>
     <div class="modal-body">`;
@@ -632,6 +699,7 @@ async function load(){
   PEOPLE=buildPeople(rows.slice(1),idx);
   $("#controls").style.display="flex";
   renderStats();
+  renderTeamChips();
   renderGrid();
 }
 
