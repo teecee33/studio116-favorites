@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Studio 1:16 · My Favorite Things</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#F8EAF0">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -30,14 +35,63 @@
     text-align:center; padding:44px 16px 10px; position:relative;
   }
   .dancer{
-    position:absolute; width:200px; height:200px; color:#F0AECC; opacity:.55;
-    pointer-events:none; z-index:0; top:26px;
+    position:absolute; width:165px; height:330px; color:#F2A9CB; opacity:.5;
+    pointer-events:none; z-index:0; top:14px;
   }
   .dancer.left{left:max(-10px, calc(50% - 560px))}
   .dancer.right{right:max(-10px, calc(50% - 560px)); transform:scaleX(-1)}
   header > *:not(.dancer){position:relative; z-index:1}
-  @media (max-width:900px){.dancer{width:120px;height:120px;opacity:.4;top:8px}}
+  @media (max-width:900px){.dancer{width:90px;height:180px;opacity:.4;top:8px}}
   @media (max-width:560px){.dancer{display:none}}
+
+  /* ---------- motion ---------- */
+  @keyframes drift{0%,100%{translate:0 0}50%{translate:0 -12px}}
+  .dancer{animation:drift 7s ease-in-out infinite}
+  .dancer.right{animation-delay:3.5s}
+  @keyframes rise{from{opacity:0; translate:0 16px}to{opacity:1; translate:0 0}}
+  .grid.anim .card{animation:rise .45s ease both; animation-delay:calc(min(var(--i,0),14)*45ms)}
+  .avatar img{transition:transform .35s ease}
+  .card:hover .avatar img{transform:scale(1.07)}
+  .sparkle{
+    position:absolute; color:#EFA8C8; pointer-events:none; z-index:0; user-select:none;
+    animation:twinkle 4.5s ease-in-out infinite;
+  }
+  @keyframes twinkle{0%,100%{opacity:.2}50%{opacity:.65}}
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none !important; transition:none !important}
+  }
+
+  /* ---------- birthday week ---------- */
+  .avwrap{position:relative; width:104px; margin-bottom:12px}
+  .avwrap .avatar{margin-bottom:0}
+  .tiara{
+    position:absolute; top:-13px; right:-8px; font-size:30px; rotate:18deg; z-index:2;
+    filter:drop-shadow(0 2px 2px rgba(0,0,0,.18));
+  }
+  @keyframes shimmer{to{background-position:200% 0}}
+  .card.bdaycard::before{
+    background:linear-gradient(90deg,#F2C34A,#E85D9E,#8B5FBF,#F2C34A);
+    background-size:200% 100%; animation:shimmer 2.8s linear infinite;
+  }
+  .tag.bweek{background:#FCF3D7; border-color:#F2E2AC; color:#6B5303}
+
+  /* ---------- spotlight ---------- */
+  .spot{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:20px 24px; margin:0 0 22px; cursor:pointer;
+    display:flex; align-items:center; gap:20px; position:relative; overflow:hidden;
+    transition:transform .15s ease;
+  }
+  .spot:hover{transform:translateY(-2px)}
+  .spot::before{
+    content:""; position:absolute; inset:0 0 auto 0; height:6px;
+    background:linear-gradient(90deg,#E85D9E,#8B5FBF);
+  }
+  .spot .avatar{width:88px;height:88px;font-size:30px;margin:0;flex-shrink:0}
+  .spot .k{font-size:12px; letter-spacing:.14em; text-transform:uppercase; font-weight:800; color:var(--pink)}
+  .spot h3{margin:2px 0 4px; font-size:21px; font-weight:800}
+  .spot p{margin:0; color:var(--ink-2); font-size:14.5px}
+  @media (max-width:560px){.spot{flex-direction:column; text-align:center; gap:12px}}
   .ribbon{
     display:inline-block; background:#FFFFFF; color:var(--pink);
     font-weight:800; font-size:12.5px; letter-spacing:.14em; text-transform:uppercase;
@@ -208,29 +262,33 @@
 <body>
 <div class="wrap">
   <header>
-    <svg class="dancer left" viewBox="0 0 100 100" aria-hidden="true">
-      <g fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round">
-        <path d="M37,24 C39,32 41,39 44,46"/>
-        <path d="M38,27 C30,21 20,15 11,13"/>
-        <path d="M39,29 C46,30 53,28 60,24"/>
-        <path d="M44,46 C58,45 76,40 90,29"/>
-        <path d="M44,46 C42,60 41,74 43,86 L50,92"/>
+    <span class="sparkle" style="top:12%;left:16%;font-size:15px">✦</span>
+    <span class="sparkle" style="top:30%;left:7%;font-size:11px;animation-delay:1.2s">✦</span>
+    <span class="sparkle" style="top:64%;left:20%;font-size:13px;animation-delay:2.4s">✧</span>
+    <span class="sparkle" style="top:15%;right:18%;font-size:12px;animation-delay:.7s">✧</span>
+    <span class="sparkle" style="top:42%;right:8%;font-size:15px;animation-delay:1.9s">✦</span>
+    <span class="sparkle" style="top:70%;right:22%;font-size:11px;animation-delay:3.1s">✦</span>
+    <svg class="dancer left" viewBox="0 0 300 600" aria-hidden="true">
+      <g fill="currentColor">
+        <ellipse cx="120" cy="55" rx="25" ry="29" transform="rotate(-14 120 55)"/>
+        <ellipse cx="103" cy="30" rx="10" ry="8" transform="rotate(-25 103 30)"/>
+        <path d="M116,112 C90,90 60,60 38,30 L28,14 C24,8 32,2 37,8 L52,26 C74,52 100,80 130,100 Z"/>
+        <path d="M132,105 C158,92 180,80 196,62 L206,50 C212,44 220,52 214,58 L200,74 C184,92 162,108 144,120 Z"/>
+        <path d="M112,100 C138,92 152,98 152,120 C154,150 150,185 148,212 C160,228 166,244 166,262 C166,288 148,302 128,299 C110,296 101,280 103,258 C105,238 104,215 102,190 C100,160 100,120 112,100 Z"/>
+        <path d="M152,238 C196,218 240,194 278,166 C286,159 296,153 298,160 C300,167 290,176 282,183 C248,210 206,238 168,260 C156,266 144,276 134,286 C122,274 130,248 152,238 Z"/>
+        <path d="M136,272 C138,322 140,372 144,414 C148,458 152,500 158,534 C161,551 166,566 171,576 C175,584 167,590 161,584 C151,572 144,551 138,528 C128,490 118,448 112,408 C106,368 102,322 104,282 C114,270 126,266 136,272 Z"/>
       </g>
-      <circle cx="35" cy="15" r="6.5" fill="currentColor"/>
-      <circle cx="41" cy="10" r="2.8" fill="currentColor"/>
-      <path d="M32,41 Q44,32 56,45 Q44,59 32,41 Z" fill="currentColor" opacity=".5"/>
     </svg>
-    <svg class="dancer right" viewBox="0 0 100 100" aria-hidden="true">
-      <g fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round">
-        <path d="M37,24 C39,32 41,39 44,46"/>
-        <path d="M38,27 C30,21 20,15 11,13"/>
-        <path d="M39,29 C46,30 53,28 60,24"/>
-        <path d="M44,46 C58,45 76,40 90,29"/>
-        <path d="M44,46 C42,60 41,74 43,86 L50,92"/>
+    <svg class="dancer right" viewBox="0 0 300 600" aria-hidden="true">
+      <g fill="currentColor">
+        <ellipse cx="120" cy="55" rx="25" ry="29" transform="rotate(-14 120 55)"/>
+        <ellipse cx="103" cy="30" rx="10" ry="8" transform="rotate(-25 103 30)"/>
+        <path d="M116,112 C90,90 60,60 38,30 L28,14 C24,8 32,2 37,8 L52,26 C74,52 100,80 130,100 Z"/>
+        <path d="M132,105 C158,92 180,80 196,62 L206,50 C212,44 220,52 214,58 L200,74 C184,92 162,108 144,120 Z"/>
+        <path d="M112,100 C138,92 152,98 152,120 C154,150 150,185 148,212 C160,228 166,244 166,262 C166,288 148,302 128,299 C110,296 101,280 103,258 C105,238 104,215 102,190 C100,160 100,120 112,100 Z"/>
+        <path d="M152,238 C196,218 240,194 278,166 C286,159 296,153 298,160 C300,167 290,176 282,183 C248,210 206,238 168,260 C156,266 144,276 134,286 C122,274 130,248 152,238 Z"/>
+        <path d="M136,272 C138,322 140,372 144,414 C148,458 152,500 158,534 C161,551 166,566 171,576 C175,584 167,590 161,584 C151,572 144,551 138,528 C128,490 118,448 112,408 C106,368 102,322 104,282 C114,270 126,266 136,272 Z"/>
       </g>
-      <circle cx="35" cy="15" r="6.5" fill="currentColor"/>
-      <circle cx="41" cy="10" r="2.8" fill="currentColor"/>
-      <path d="M32,41 Q44,32 56,45 Q44,59 32,41 Z" fill="currentColor" opacity=".5"/>
     </svg>
     <div class="ribbon">2026 – 2027 Dance Year</div>
     <h1>Studio 1:16 <span class="accent">·</span> My Favorite Things</h1>
@@ -502,15 +560,34 @@ function sortPeople(list){
   return list.sort((a,b)=>key(a)-key(b));
 }
 
+let firstRender=true;
+function spotlightHTML(){
+  if(!PEOPLE.length) return "";
+  const day=Math.floor(Date.now()/86400000);
+  const p=[...PEOPLE].sort((a,b)=>a.name.localeCompare(b.name))[day%PEOPLE.length];
+  const [a,as]=accentFor(p);
+  const ph=photoSrc(p.raw.photo,240);
+  const facts=[p.raw.dance&&`loves ${p.raw.dance}`,p.raw.candy&&`can't resist ${p.raw.candy}`,p.raw.hobbies&&`spends free time on ${p.raw.hobbies}`].filter(Boolean).slice(0,2).join(" · ");
+  return `<div class="spot" id="spotCard" data-i="${p.i}" role="button" tabindex="0" aria-label="Open ${esc(p.name)}">
+    <div class="avatar" style="--card-accent:${a};--card-accent-soft:${as};background:${as};color:${a}">${esc(p.raw.monogram?p.raw.monogram.slice(0,3).toUpperCase():initialsOf(p.name))}${ph?`<img src="${esc(ph)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`:""}</div>
+    <div><div class="k">✨ Dancer of the day</div><h3>${esc(p.name)}</h3>
+    <p>${esc(facts)||"Tap to get to know her favorites!"}</p></div>
+  </div>`;
+}
 function renderGrid(){
   const q=$("#q").value.trim();
-  const list=sortPeople(PEOPLE.filter(p=>matches(p,q)));
+  const now=new Date(), _mo=now.getMonth()+1, _d=now.getDate();
+  const bw=p=>bdayOffset(p,_mo,_d)<=6;   // birthday within a week
+  let list=sortPeople(PEOPLE.filter(p=>matches(p,q)));
+  list=[...list.filter(bw),...list.filter(p=>!bw(p))]; // birthday girls first
   const c=$("#content");
   if(!list.length){
     c.innerHTML=`<div class="state"><h2>No matches 🩰</h2>Try a different search.</div>`;
     return;
   }
-  c.innerHTML=`<div class="grid">`+list.map(p=>{
+  const showSpot=!q&&!teamFilter;
+  c.innerHTML=(showSpot?spotlightHTML():"")+`<div class="grid${firstRender?" anim":""}">`+list.map((p,gi)=>{
+    p._gi=gi; p._bw=bw(p);
     const [a,as]=accentFor(p);
     const col=cssColor(p.raw.color);
     const tags=[];
@@ -521,19 +598,21 @@ function renderGrid(){
     const al=p.raw.allergy&&!/^(n\/?a|none|no)\.?$/i.test(p.raw.allergy.trim());
     if(al) tags.push(`<span class="tag allergy">⚠️ ${esc(p.raw.allergy)}</span>`);
     const ph=photoSrc(p.raw.photo,240);
-    return `<div class="card" style="--card-accent:${a};--card-accent-soft:${as}" data-i="${p.i}" tabindex="0" role="button" aria-label="Open ${esc(p.name)}">
-      <div class="avatar">${esc(p.raw.monogram?p.raw.monogram.slice(0,3).toUpperCase():initialsOf(p.name))}${ph?`<img src="${esc(ph)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`:""}</div>
+    if(p._bw) tags.unshift(`<span class="tag bweek">🎉 Birthday week!</span>`);
+    return `<div class="card${p._bw?" bdaycard":""}" style="--card-accent:${a};--card-accent-soft:${as};--i:${p._gi}" data-i="${p.i}" tabindex="0" role="button" aria-label="Open ${esc(p.name)}">
+      <div class="avwrap"><div class="avatar">${esc(p.raw.monogram?p.raw.monogram.slice(0,3).toUpperCase():initialsOf(p.name))}${ph?`<img src="${esc(ph)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`:""}</div>${p._bw?`<span class="tiara">👑</span>`:""}</div>
       <h3>${esc(p.name)}</h3>
       <div class="meta">${esc(p.raw.shirt||"")}</div>
       <div class="tags">${tags.join("")}</div>
       <div class="more">See all favorites →</div>
     </div>`;
   }).join("")+`</div>`;
-  c.querySelectorAll(".card").forEach(el=>{
+  c.querySelectorAll(".card, .spot").forEach(el=>{
     const open=()=>openModal(+el.dataset.i);
     el.addEventListener("click",open);
     el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}});
   });
+  firstRender=false;
 }
 
 function openModal(i){
